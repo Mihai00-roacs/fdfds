@@ -1,0 +1,63 @@
+1. Ce se intampla daca scoatem linia ,,echo $data >> "students" "(oricare dintre aparitii)?
+Nu se va mai scrie nimic in fisierul students.
+
+2.Ce reprezinta urmatoarea secventa de cod? 
+
+ student_last_grade=${student_grades_number[`expr $student_id `]}
+    sum=0
+    for((j=0;j<student_last_grade;j++))do
+          index=$((student_id*10+j))
+          sum=$((${student_grades[$index]} + $sum))
+    done
+La prima linie iau numarul de note al studentului reprezentat prin student_id din array-ul asociativ.
+Apoi, imi setez suma la 0(suma care va reprezenta suma notelor unui student), si voi face un for 
+de la 0 pana la numarul notelor studentului.Voi calcula index-ul la care se va gasi nota in al 
+doilea array asociativ(l-am gandit ca o matrice unde randurile sunt reprezentate de id-urile studentilor
+si coloanele de nota i a studentului). Voi aduna la vechea suma ce am gasit la acel index in array-ul asociativ
+si repet.
+
+3. Care este logica din spatele gasirii id-ului unui student in fisierul student? (Asta e secventa de cod:
+ data=$(grep "$nume" "students")
+    touch "tmp_file"
+    echo $data>>"tmp_file"
+    
+    student_id=$(cut -d " " -f 2 "tmp_file" | cut -d ":" -f 2) ). Explicatia cut-ului se va face pas cu pas.
+
+Grep: Caut linia din fisierul students care corespunde numelui studentului
+Touch: imi creez un fisier temporal
+Echo: scriu linia in acel fisier temporal pentru a putea aplica cut-uri
+Primul cut: Dat fiind ca elementele de pe o linie sunt separate prin spatii, voi face 
+cut-ul dupa spatiu. Totodata, stiu sigur ca dupa al doilea spatiu urmeaza ,,student:student_id", deci acolo va trebui sa caut id-ul studentului. Totodata, trebuie sa mai fac un cut pentru ca eu vreau doar student_id, deci cut-ul al doilea va trebui sa-l leg printr-un pipe de primul cut.
+
+4. Care este logica din spatele for-ului urmator:
+for((i=0;i<$max_students;i++)) do
+  student_grades_number[$i]=0
+done
+La inceputul fiecarei rulari a scriptului imi resetez catalogul, astfel ca fiecare student(dintre cei maxim 10) va avea 0 note.
+
+5. Liniile unde verifici existenta unui fisier.
+if [ -f "students" ];
+then
+  echo
+else
+  touch "students"
+fi
+if [ -f "grades" ];
+then
+  echo
+else
+  touch "grades"
+fi
+
+6. De ce este nevoie de aceasta secventa de cod?
+packages=("bc")
+
+for pkg in $packages; do
+    if dpkg --get-selections | grep -q "^$pkg[[:space:]]*install$" >/dev/null; then
+        echo -e "$pkg este deja instalat"
+    else
+        sudo apt-get install -y $pkg
+        echo "$pkg s-a intsalat cu succes"
+    fi
+done
+Pentru ca nu toate distributiile de Unix/Ubuntu/Kali etc. contin pachetul bc, pe care il folosesc pentru a putea lucra cu numere rationale.
